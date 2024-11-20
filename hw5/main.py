@@ -64,8 +64,8 @@ def read_sqlite(filename: str) -> list[dict]:
     return vacancies
 
 
-def write_sqlalchemy(filename: str, data: list[dict]) -> None:
-    engine = create_engine(f'sqlite:///{filename}')
+def write_sqlalchemy(connection_string: str, data: list[dict]) -> None:
+    engine = create_engine(connection_string)
     Base = declarative_base()
 
     class Vacancy(Base):
@@ -86,8 +86,8 @@ def write_sqlalchemy(filename: str, data: list[dict]) -> None:
     session.close()
 
 
-def read_sqlalchemy(filename: str) -> list[dict]:
-    engine = create_engine(f'sqlite:///{filename}')
+def read_sqlalchemy(connection_string: str) -> list[dict]:
+    engine = create_engine(connection_string)
     Base = declarative_base()
 
     class Vacancy(Base):
@@ -111,5 +111,6 @@ if __name__ == '__main__':
     write_json('output.json', vacancies)
     # write_sqlite('output.db', vacancies)
     # print(read_sqlite('output.db'))
-    write_sqlalchemy('output.db', vacancies)
-    print(read_sqlalchemy('output.db'))
+    connection_string = 'sqlite:///output.db'
+    write_sqlalchemy(connection_string, vacancies)
+    print(read_sqlalchemy(connection_string))
