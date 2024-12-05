@@ -1,23 +1,15 @@
 import requests
-import json
 from urllib.parse import urljoin
 
-class GoodWineParser:
+from ParserBase import ParserBase
+
+class GoodWineParser(ParserBase):
     url = "https://goodwine.com.ua/ua"
     api_url = "https://goodwine.com.ua/graphql"
 
 
-    def __init__(self):
-        pass
-
-    def parse_whisky_list(self, max_page: int):
-        page = 1
-        while page <= max_page:
-            products = self.parse_page(page)
-            if len(products) == 0:
-                break
-            yield products
-            page += 1
+    def __init__(self, output_file):
+        super().__init__(output_file)
 
 
     def parse_page(self, page: int):

@@ -1,25 +1,17 @@
 import requests
 from urllib.parse import urljoin
 
-class SilpoParser:
+from ParserBase import ParserBase
+
+class SilpoParser(ParserBase):
     url = 'https://silpo.ua'
     # default branch id
     branch = '00000000-0000-0000-0000-000000000000'
     api_url = f'https://sf-ecom-api.silpo.ua/v1/uk/branches/{branch}/products'
     
 
-    def __init__(self):
-        pass
-
-
-    def parse_whisky_list(self, max_page: int):
-        page = 1
-        while page <= max_page:
-            products = self.parse_page(page)
-            if len(products) == 0:
-                break
-            yield products
-            page += 1
+    def __init__(self, output_file):
+        super().__init__(output_file)
 
 
     def parse_page(self, page: int):

@@ -2,30 +2,35 @@ from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.chrome.options import Options
+
+from ParserBase import ParserBase
 
 
-class WineTimeParser:
+class WineTimeParser(ParserBase):
     url = "https://www.winetime.com.ua"
 
     driver = None
 
     
-    def __init__(self):
-        self.driver = webdriver.Chrome()
+    def __init__(self, output_file):
+        super().__init__(output_file)
+        
+        chrome_options = Options()
+        # Run in headless mode
+        chrome_options.add_argument("--headless")
+        # Disable GPU (useful for headless mode in some environments)
+        chrome_options.add_argument("--disable-gpu")
+        # Prevent issues in some Linux environments  
+        chrome_options.add_argument("--no-sandbox")
+        # Avoid memory issues in Docker containers
+        chrome_options.add_argument("--disable-dev-shm-usage")
+
+        self.driver = webdriver.Chrome(options=chrome_options)
 
 
     def __del__(self):
         self.driver.quit()
-
-
-    def parse_whisky_list(self, max_page: int):
-        page = 1
-        while page <= max_page:
-            products = self.parse_page(page)
-            if len(products) == 0:
-                break
-            yield products
-            page += 1
 
 
     def parse_page(self, page: int):

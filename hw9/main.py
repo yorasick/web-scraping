@@ -4,23 +4,19 @@ from GoodWine import GoodWineParser
 from WineTime import WineTimeParser
 from Silpo import SilpoParser
 
+from ParserBase import ParserBase
+
 if __name__ == "__main__":
-    # parser = OkWineParser()
-    # output_file = 'OkWine.json'
+    parsers: list[ParserBase] = [
+        OkWineParser(output_file='OkWine.json'),
+        GoodWineParser(output_file='GoodWine.json'),
+        WineTimeParser(output_file='WineTime.json'),
+        SilpoParser(output_file='Silpo.json')
+    ]
 
-    # parser = GoodWineParser()
-    # output_file = 'GoodWine.json'
-
-    # parser = WineTimeParser()
-    # output_file = 'WineTime.json'
-
-    parser = SilpoParser()
-    output_file = 'Silpo.json'
-
+for parser in parsers:
     result = []
-    for products in parser.parse_whisky_list(max_page=1):
+    for products in parser.parse_list(max_page=1):
         result.extend(products)
 
-    # TODO: save to db
-    with open(output_file, "w") as f:
-        json.dump(result, f, indent=4, ensure_ascii=False)
+    parser.write_to_json(result)
