@@ -4,18 +4,17 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.chrome.options import Options
 
-from ParserBase import ParserBase
-
+from db import DatabaseManager
+from .ParserBase import ParserBase
 
 class WineTimeParser(ParserBase):
+    name = "WineTime"
     url = "https://www.winetime.com.ua"
-
     driver = None
 
-    
-    def __init__(self, output_file):
-        super().__init__(output_file)
-        
+    def __init__(self, db: DatabaseManager):
+        super().__init__(db)
+
         chrome_options = Options()
         # Run in headless mode
         chrome_options.add_argument("--headless")
@@ -70,13 +69,12 @@ class WineTimeParser(ParserBase):
                 old_price = 0
 
             products.append({
-                "id": id,
+                "source": self.name,
+                "external_id": id,
                 "title": name,
                 "url": url,
-                "prices": {
-                    "price": price,
-                    "old_price": old_price
-                }
+                "price": price,
+                "old_price": old_price
             })
             
         return products

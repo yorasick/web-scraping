@@ -106,7 +106,7 @@ def read_sqlalchemy(connection_string: str) -> list[dict]:
     return [vacancy.__dict__ for vacancy in vacancies]
 
 if __name__ == '__main__':
-    html = get_html_content()
+    html = get_html_content(connection_string='sqlite:///output.db')
     vacancies = parse_vacancies(html)
     write_json('output.json', vacancies)
     # write_sqlite('output.db', vacancies)

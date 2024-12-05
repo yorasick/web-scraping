@@ -1,15 +1,17 @@
 import requests
 from urllib.parse import urljoin
 
-from ParserBase import ParserBase
+from db import DatabaseManager
+from .ParserBase import ParserBase
 
 class GoodWineParser(ParserBase):
+    name = "GoodWine"
     url = "https://goodwine.com.ua/ua"
     api_url = "https://goodwine.com.ua/graphql"
 
 
-    def __init__(self, output_file):
-        super().__init__(output_file)
+    def __init__(self, db: DatabaseManager):
+        super().__init__(db)
 
 
     def parse_page(self, page: int):
@@ -250,15 +252,14 @@ class GoodWineParser(ParserBase):
             json = response.json()
             product_list = json.get("data", {}).get("products", {}).get("items", [])
             return [{
-                "id": item.get("id", ""),
+                "source": self.name,
+                "external_id": item.get("id", ""),
                 "title": item.get("name", ''),
                 "url": urljoin(self.url, item.get("url_key", '')),
-                "prices": {
-                    "price": item.get("price_tiers", [])[0].get("final_price", 0).get("value", 0) 
-                        if item.get("price_tiers") and len(item.get("price_tiers", [])) > 0 
-                        else 0,
-                    "old_price": item.get("price", {}).get("regularPrice", {}).get("amount", {}).get("value", 0)
-                        if len(item.get("price_tiers", [])) > 0 and item.get("price_tiers", [])[0].get("discount", {}).get("amount_off", 0) > 0 
-                        else 0
-                }
+                "price": item.get("price_tiers", [])[0].get("final_price", 0).get("value", 0) 
+                    if item.get("price_tiers") and len(item.get("price_tiers", [])) > 0 
+                    else 0,
+                "old_price": item.get("price", {}).get("regularPrice", {}).get("amount", {}).get("value", 0)
+                    if len(item.get("price_tiers", [])) > 0 and item.get("price_tiers", [])[0].get("discount", {}).get("amount_off", 0) > 0 
+                    else 0
             } for item in product_list]

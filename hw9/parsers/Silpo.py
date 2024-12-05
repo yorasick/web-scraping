@@ -1,17 +1,19 @@
 import requests
 from urllib.parse import urljoin
 
-from ParserBase import ParserBase
+from db import DatabaseManager
+from .ParserBase import ParserBase
 
 class SilpoParser(ParserBase):
+    name = "Silpo"
     url = 'https://silpo.ua'
     # default branch id
     branch = '00000000-0000-0000-0000-000000000000'
     api_url = f'https://sf-ecom-api.silpo.ua/v1/uk/branches/{branch}/products'
     
 
-    def __init__(self, output_file):
-        super().__init__(output_file)
+    def __init__(self, db: DatabaseManager):
+        super().__init__(db)
 
 
     def parse_page(self, page: int):
@@ -34,12 +36,11 @@ class SilpoParser(ParserBase):
             json = response.json()
             product_list = json.get("items", [])
             return [{
-                "id": item.get("id", ""),
+                "source": self.name,
+                "external_id": item.get("id", ""),
                 "title": item.get("title", ''),
                 "url": urljoin(self.url, f"product/{item.get('slug', '')}"),
-                "prices": {
-                    "price": item.get("price", 0),
-                    "old_price": item.get("old_price", 0)
-                }
+                "price": item.get("price", 0),
+                "old_price": item.get("old_price", 0)
             } for item in product_list]
         
